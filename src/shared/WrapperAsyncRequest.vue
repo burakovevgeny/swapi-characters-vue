@@ -1,6 +1,8 @@
 <template>
   <div v-if="isLoading" class="async-wrapper">
-    <h2 class="async-wrapper__title" v-if="isError">OOOPS, TRY LETTER, JEDI!</h2>
+    <h2 class="async-wrapper__title" v-if="isError">
+      OOOPS, TRY LETTER, JEDI!
+    </h2>
     <LoadingSpinner v-else />
   </div>
   <div v-else>
@@ -11,12 +13,12 @@
 <script lang='ts'>
 import { APIStatus } from "@/models";
 import Vue, { PropType } from "vue";
-import LoadingSpinner from '@/shared/LoadingSpinner.vue'
+import LoadingSpinner from "@/shared/LoadingSpinner.vue";
 
 export default Vue.extend({
   name: "WrapperAsyncRequest",
   components: {
-    LoadingSpinner
+    LoadingSpinner,
   },
   props: {
     status: {
@@ -33,7 +35,7 @@ export default Vue.extend({
     },
     isError() {
       return this.status === APIStatus.Error;
-    }
+    },
   },
 });
 </script>
@@ -48,6 +50,10 @@ export default Vue.extend({
   &__title {
     color: var(--primary);
     font-size: 34px;
+
+    @media screen and (max-width: 768px) {
+      font-size: 18px;
+    }
   }
 }
 </style>

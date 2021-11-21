@@ -8,9 +8,15 @@ import state from './state';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+export const store = new Vuex.Store({
   state,
   mutations,
   actions,
   getters,
 });
+
+store.subscribe((mutation, state) => {
+  localStorage.setItem('favorites', JSON.stringify(state.favorites.favoriteData));
+});
+
+export default store;

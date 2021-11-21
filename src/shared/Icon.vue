@@ -1,5 +1,5 @@
 <template>
-  <span class="icon mdi" :class="icon" />
+  <span class="icon mdi" :class="icon" @click="onClick" />
 </template>
 
 <script lang='ts'>
@@ -11,6 +11,11 @@ export default Vue.extend({
     icon: {
       type: String,
       required: true,
+    },
+  },
+  methods: {
+    onClick() {
+      this.$emit("click");
     },
   },
 });
