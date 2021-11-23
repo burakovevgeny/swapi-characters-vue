@@ -1,26 +1,31 @@
 <template>
   <Layout>
     <CharactersFilter
+      v-model="search"
       :characters="characters"
       :filter="gender"
-      v-model="search"
       @change="handleGenderChange"
     />
     <WrapperAsyncRequest :status="status">
       <div class="card-wrapper">
-        <div v-if="!filteredCharacters.length">
+        <div v-if="!getPaginatedItems.paginatedPeople.length">
           <h2 class="card-wrapper__title">No data to display, Jedi!</h2>
         </div>
         <Card
-          :id="filtered.id"
-          :name="filtered.name"
-          :planet="filtered.homeworld.name"
-          :key="filtered.id"
-          :favorite="checkIsFavorite(filtered.name)"
-          v-for="filtered in filteredCharacters"
+          v-for="paginated in getPaginatedItems.paginatedPeople"
+          :id="paginated.id"
+          :name="paginated.name"
+          :planet="paginated.homeworld.name"
+          :key="paginated.id"
+          :favorite="checkIsFavorite(paginated.name)"
         />
       </div>
     </WrapperAsyncRequest>
+    <Paginator
+      v-model="page"
+      :pageSize="pageSize"
+      :total="getPaginatedItems.total"
+    />
   </Layout>
 </template>
 
@@ -29,19 +34,28 @@ import Vue from "vue";
 import Layout from "@/shared/Layout.vue";
 import WrapperAsyncRequest from "@/shared/WrapperAsyncRequest.vue";
 import CharactersFilter from "@/shared/Filter.vue";
+import Paginator from "@/shared/Paginator.vue";
 import Card from "@/shared/Card.vue";
 import { mapGetters } from "vuex";
 import { Gender, People } from "@/models";
-import { filterPeople } from "@/helpers";
+import { filterPeople, paginateArray } from "@/helpers";
 
 export default Vue.extend({
   name: "Main",
-  components: { Layout, WrapperAsyncRequest, CharactersFilter, Card },
+  components: {
+    Layout,
+    WrapperAsyncRequest,
+    CharactersFilter,
+    Card,
+    Paginator,
+  },
   data() {
     return {
       filteredCharacters: [] as People[],
       search: "",
       gender: Gender.ALL,
+      page: 1,
+      pageSize: 10,
     };
   },
   mounted() {
@@ -60,6 +74,7 @@ export default Vue.extend({
           this.gender,
           search
         );
+        this.page = 1;
       },
     },
   },
@@ -69,6 +84,15 @@ export default Vue.extend({
       characters: "getCharacters",
       favorites: "getFavorites",
     }),
+    getPaginatedItems() {
+      const paginatedPeople = paginateArray(
+        this.filteredCharacters,
+        this.page,
+        this.pageSize
+      );
+
+      return { paginatedPeople, total: this.$data.filteredCharacters.length };
+    },
   },
   methods: {
     checkIsFavorite(name: string) {
@@ -83,6 +107,7 @@ export default Vue.extend({
         this.search
       );
       this.gender = gender;
+      this.page = 1;
     },
   },
 });
